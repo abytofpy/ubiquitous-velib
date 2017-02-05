@@ -152,7 +152,7 @@ b <- data.frame(no_evenement_vides_continus=a$values, durée_indispo_totale=a$le
 hist(b$durée_indispo_totale)
 
 
-data_tmp <- data_tmp[c("number", 'download_date','no_evenement_vides_continus')][!duplicated(data_tmp$'no_evenement_vides_continus'),]
+data_tmp <- data_tmp[c("number", 'download_date','no_evenement_vides_continus', 'bike_stands')][!duplicated(data_tmp$'no_evenement_vides_continus'),]
 
 data_ggplot <- merge(data_tmp, ref_number_cp, by = 'number')
 data_ggplot <- merge (b, data_ggplot)
@@ -164,8 +164,9 @@ data_ggplot$CP <- as.character(data_ggplot$code_postal)
 
 #### Let's GGplot !
 
-ggplot(data_ggplot, aes(durée_indispo_totale , colour = code_postal)) +
+ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = CP, weight = bike_stands)) + scale_y_sqrt() + 
   geom_freqpoly(binwidth = 60)
 
-ggplot(data_ggplot, aes(durée_indispo_totale , colour = day)) +
-  geom_freqpoly(binwidth = 60)
+ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = day , weight = bike_stands)) + scale_y_sqrt() +
+  geom_freqpoly(binwidth = 60) 
+
