@@ -49,7 +49,7 @@ data_fromSQLITE_to_df <- function(SQLite_db, tbl_name) {
 
 
 ###############################################################################
-# Comment convertire le json intitial et générer les fichiers SQLITE ... lent
+# Comment convertir le json intitial et générer les fichiers SQLITE ... lent
 setwd("~/Documents/dev/Cepe/ubiquitous-velib")
 # Placer les données dans un répertoire data/data_all_Paris/ à côté du script
 json_file <- "data/data_all_Paris/data_all_Paris.jjson_2017-01-01-1483248351.gz" 
@@ -170,3 +170,18 @@ ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = CP, weight
 ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = day , weight = bike_stands)) + scale_y_sqrt() +
   geom_freqpoly(binwidth = 60) 
 
+hist(data_ggplot$bike_stands)
+# Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 8.00   23.00   30.00   32.74   40.00   72.00 
+summary(data$bike_stands)
+# divisons les stations en 4 populations, scindées par les valeurs : 23, 30, 40
+data_ggplot <- data_ggplot %>% mutate(bike_stands_cat = ntile(bike_stands, 4))
+
+# TODO : convert 'day' columns to factor
+# TODO : create a 'weekend' factor column
+# TODO : facetgrid plot of bike_stands_cat ~ weekday 
+
+# TODO later : intégrer un facteur 'saison'
+# TODO later : intégrer un facteur 'jour de vacances parisiennes'
+# TODO later + : intégrer les jours de lever/coucher du soleil
+# TODO later + : intégrer les jours de pluie, ... (météo)
