@@ -38,3 +38,6 @@ referentiel <- data_fromSQLITE_to_df(SQLite_db, tbl_name)
 ###############################################################################
 ref_number_cp <- data.frame(referentiel$number, referentiel$cp)
 colnames(ref_number_cp) <- c("number","code_postal")
+
+###############################################################################
+hist(referentiel$bike_stands)
