@@ -167,6 +167,8 @@ data_ggplot$CP <- as.character(data_ggplot$code_postal)
 ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = CP, weight = bike_stands)) + scale_y_sqrt() + 
   geom_freqpoly(binwidth = 60)
 
+data_ggplot$day <- factor(data_ggplot$day, levels = c('lundi','mardi', 'mercredi', 'jeudi', 'vendredi','samedi','dimanche'))
+
 ggplot(data_ggplot, aes(durée_indispo_totale , ..density.., colour = day , weight = bike_stands)) + scale_y_sqrt() +
   geom_freqpoly(binwidth = 60) 
 
@@ -177,8 +179,30 @@ summary(data$bike_stands)
 # divisons les stations en 4 populations, scindées par les valeurs : 23, 30, 40
 data_ggplot <- data_ggplot %>% mutate(bike_stands_cat = ntile(bike_stands, 4))
 
-# TODO : convert 'day' columns to factor
-# TODO : create a 'weekend' factor column
+# DONE : convert 'day' columns to factor
+# DONE : create a 'weekend' factor column
+#data_ggplot[data_ggplot$day %in%  c('lundi','mardi','mercredi','jeudi','vendredi'), ][,"type_jour"] <- "semaine"
+#data_ggplot[data_ggplot$day %in% c('samedi','dimanche'), ][, "type_jour"] <- "weekend"
+
+data_ggplot$weekEnd <- 0
+samedi<-which(data_ggplot$day=='samedi')
+dimanche<-which(data_ggplot$day=='dimanche')
+data_ggplot$weekEnd[samedi]<-1
+data_ggplot$weekEnd[dimanche]<-1
+
+data_ggplot$weekEnd <- factor(data_ggplot$weekEnd, levels = c(0,1) )
+
+ggplot(data_ggplot, aes(durée_indispo_totale, ..density.., color = weekEnd , weight = bike_stands)) + scale_y_sqrt() +
+  geom_freqpoly(binwidth = 60)
+
+hp <- ggplot(data_ggplot, aes(x=durée_indispo_totale, ..density..)) + geom_histogram(binwidth=2,colour="black")
+hp + facet_grid(. ~ weekEnd) + scale_y_sqrt() 
+
+hp2 <- ggplot(data_ggplot, aes(x=durée_indispo_totale, ..density..)) + geom_histogram(binwidth=2,colour="black")
+hp2 + facet_grid(. ~ bike_stands_cat) + scale_y_sqrt() 
+
+hp3 <- ggplot(data_ggplot, aes(x=durée_indispo_totale, ..density..)) + geom_histogram(binwidth=2,colour="black")
+hp3 + facet_grid(weekEnd ~ bike_stands_cat) + scale_y_sqrt() 
 # TODO : facetgrid plot of bike_stands_cat ~ weekday 
 
 # TODO later : intégrer un facteur 'saison'
