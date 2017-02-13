@@ -40,4 +40,10 @@ ref_number_cp <- data.frame(referentiel$number, referentiel$cp)
 colnames(ref_number_cp) <- c("number","code_postal")
 
 ###############################################################################
-hist(referentiel$bike_stands)
+# On intègre les 126 stations les plus en altitude : Velib+ à + de 60 m.
+csv_file2 <- 'data/Vplus_stations.csv'
+Vplus_stations <- read.csv(csv_file2, sep='\t')
+
+ref_number_cp <- merge(Vplus_stations, ref_number_cp, by = 'number', all = TRUE)
+
+#ref_number_cp <- ref_number_cp[is.na(ref_number_cp)] <- 0
