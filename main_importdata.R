@@ -35,7 +35,7 @@ data_fromJSON_to_SQLite <- function(json_file,SQLite_db ) {
   #export vers la base sqlite
   #file.remove("SQLiteData/Test.sqlite") # peut être nécessaire si l'on veut remplacer le contenu de la base
   con <- dbConnect(RSQLite::SQLite(), dbname="SQLiteData/Test.sqlite")
-  dbWriteTable(con, name="raw_data", value = data_frame_full , row.names = FALSE) # Append à ajouter pour plus tard
+  dbWriteTable(con, name="raw_data", value = data_frame_full , row.names = FALSE, append = TRUE) # Append à ajouter pour plus tard
   
   }
 
@@ -52,6 +52,12 @@ data_fromSQLITE_to_df <- function(SQLite_db, tbl_name) {
 # Comment convertir le json intitial et générer les fichiers SQLITE ... lent
 setwd("~/Documents/dev/Cepe/ubiquitous-velib")
 # Placer les données dans un répertoire data/data_all_Paris/ à côté du script
+setwd("~/Documents/dev/Cepe/ubiquitous-velib/data/data_all_Paris/")
+
+filesToProcess <- list.files(pattern = ".gz")
+lapply(filesToProcess, function(x) 
+
+setwd("~/Documents/dev/Cepe/ubiquitous-velib")
 json_file <- "data/data_all_Paris/data_all_Paris.jjson_2017-01-01-1483248351.gz" 
 SQLite_db <- "SQLiteData/Test.sqlite"
 
