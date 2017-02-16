@@ -43,6 +43,7 @@ def gzip_Json_to_sqlite(jsonfilename):
     # alternative : absolute path starting with an additional slash
    
 if __name__ == "__main__":
+    
     disk_engine = sa.create_engine('sqlite:///data/SQLiteData/Velib_raw_Data.sqlite')
     
     for file in os.listdir('data/data_all_Paris/'):
