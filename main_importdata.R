@@ -39,6 +39,19 @@ data_fromJSON_to_SQLite <- function(json_file,SQLite_db ) {
   
   }
 
+# En alternative, à partir des fichiers dezippés, credits 
+data_fromJSON_to_SQLite_mkII <- function(SQLite_db, tbl_name, json_file) {
+  con <- dbConnect(RSQLite::SQLite(), dbname=SQLite_db)
+  f = file(json_file)
+  L = readLines(f)
+  La=lapply(L,function(l){try({fromJSON(l)},silent=TRUE)})
+  data_frame = do.call(rbind,La[lapply(La,class)=="data.frame"])
+  close(f)
+  data_frame <- subset(data_frame , select = -c(contract_name ))
+  dbWriteTable(con, name=tbl_name, value = data_frame , row.names = FALSE, append = TRUE)
+  dbDisconnect(con)
+  }
+
 
 data_fromSQLITE_to_df <- function(SQLite_db, tbl_name) {
   con <- dbConnect(RSQLite::SQLite(), dbname=SQLite_db )
