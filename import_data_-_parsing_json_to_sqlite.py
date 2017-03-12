@@ -3,6 +3,7 @@
 Chargement des données Velib du site http://vlsstats.ifsttar.fr/rawdata/
 Les données traitées correspondent aux fichiers .gz produits à une fréquence
 mensuelle.
+Attention, certains fichiers du site sont compressés deux fois de suite
 Il est nécessaire de télécharger les données pour les traiter avec ce script.
 Ce script ne traite pas les données accessibles via l'API JCD temps réel.
 """
@@ -21,13 +22,22 @@ def gzip_Json_to_str(jsonfilename):
         data = json.loads(json.dumps(json_str))[1:-2]
         return(data) 
 
+def gzip_Json_to_str2(jsonfilename):
+    with gzip.GzipFile(jsonfilename, 'r') as file:        
+        json_bytes = file.read()         
+        json_str = json_bytes.decode('utf-8')#, errors='ignore')            
+        data = json.loads(json.dumps(json_str))
+        return(data) 
 
 def gzip_Json_todf(jsonfilename):
     data = gzip_Json_to_str(jsonfilename)
     data1 = data.replace(']',',\n')
-    data2 =  "[" + data1.replace('[', '') + "]"
+    data2 =  "[ " + data1.replace('[', '') + " ]"
     return(pd.read_json(data2, orient='records'))
 
+def gzip_Json_todf2(jsonfilename):
+    data = gzip_Json_to_str2(jsonfilename)[1:-2].replace(']',',').replace('[', '').replace(' },{','}\n {')
+    return(pd.read_json(data, lines=True))
 
 def gzip_Json_to_sqlite(jsonfilename):
     data_frame = gzip_Json_todf(jsonfilename)
@@ -51,4 +61,19 @@ if __name__ == "__main__":
         try :
             gzip_Json_to_sqlite(file)
         except :
+            try :
+                data = gzip_Json_to_str2(file)
+                data_frame = pd.read_json(data, orient='records')
+                                
+                columns = ['available_bike_stands', 'available_bikes', 'bike_stands',
+                           'download_date', 'last_update', 'number', 'status']
+
+                for c in data_frame.columns:
+                    if c not in columns:
+                        data_frame = data_frame.drop(c, axis=1) 
+
+    #TODO : engine = create_engine('mysql+mysqldb://meee:pass@localhost/foo')
+                data_frame.to_sql('data', disk_engine, chunksize=1000, if_exists='append')
+                
+                
             print('Error while parsing : ' + file)
